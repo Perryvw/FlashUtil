@@ -45,7 +45,7 @@ end
 --			callback - a callback function to be executed once the request returns.
 --					Callback parameters: playerID - the player that has responded; data - the requested data
 function FlashUtil:RequestData( dataName, playerID, callback )
-	local requestID = DoUniqueString()
+	local requestID = DoUniqueString(dataName)
 	self.callbacks[requestID] = callback
 
 	FireGameEvent('FlashUtil_request', { request_id = requestID, data_name = dataName, target_player = playerID })
@@ -56,7 +56,8 @@ end
 --				[requestID]:[playerID (owner of replying UI)]:[data type]:[data]
 function FlashUtil:HandleReturn( return_data )
 	--Parse data
-	local split = string.gmatch(return_data, "[^:]+")
+	print("return data: '"..return_data.."'")
+	local split = string.gmatch(return_data, "[^;]+")
 	local data = {}
 	for i in split do
 		data[#data + 1] = i
@@ -86,7 +87,7 @@ end
 --Parse a vector from a string if possible
 --Params:	str - a vector formatted as string, its components separated by ;
 function FlashUtil:ParseVector( str )
-	local split = string.gmatch(str, "[^;]+")
+	local split = string.gmatch(str, "[^,]+")
 	local data = {}
 	for i in split do
 		data[#data + 1] = i
@@ -103,10 +104,22 @@ function FlashUtil:ParseVector( str )
 	end
 end
 
---Request a player's world cursor position
+--Request a player's cursor position in world coordinates
 --Params:	pID - the player ID we want the cursor position for
 function FlashUtil:GetCursorWorldPos( pID, callback )
 	self:RequestData('cursor_position_world', pID, callback)
+end
+
+--Request a player's cursor position
+--Params:	pID - the player ID we want the cursor position for
+function FlashUtil:GetCursorPos( pID, callback )
+	self:RequestData('cursor_position', pID, callback)
+end
+
+--Request a player's name
+--Params:	pID - the player ID we want the name for
+function FlashUtil:GetPlayerName( pID, callback )
+	self:RequestData('player_name', pID, callback)
 end
 
 FlashUtil:Init()
