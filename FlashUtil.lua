@@ -56,7 +56,6 @@ end
 --				[requestID]:[playerID (owner of replying UI)]:[data type]:[data]
 function FlashUtil:HandleReturn( return_data )
 	--Parse data
-	print("return data: '"..return_data.."'")
 	local split = string.gmatch(return_data, "[^;]+")
 	local data = {}
 	for i in split do
@@ -77,8 +76,6 @@ function FlashUtil:HandleReturn( return_data )
 	--Call the corresponding callback
 	if self.callbacks[requestID] then
 		self.callbacks[requestID](playerID, result)
-		--remove callback from the map
-		self.callbacks[requestID] = nil
 	else
 		print('[FlashUtil] Error: callback not found. Data: '..return_data)
 	end
@@ -120,6 +117,32 @@ end
 --Params:	pID - the player ID we want the name for
 function FlashUtil:GetPlayerName( pID, callback )
 	self:RequestData('player_name', pID, callback)
+end
+
+--Request a data stream
+--Params:	dataName - the name of the data you want to request (see top of file)
+--			rps - requests per second, lower values yield better performance, higher values give smoother data
+--			playerID - the ID of the player you want to send the request to, -1 to send to all (callback will only fire for the first reply)
+--			callback - a callback function to be executed once the request returns.
+--					Callback parameters: playerID - the player that has responded; data - the requested data
+--Returns:	an ID that uniquely identifies this stream (needed for stopping)
+function FlashUtil:RequestDataStream( dataName, rps, pID, callback )
+	local requestID = DoUniqueString(dataName)
+	self.callbacks[requestID] = callback
+
+	FireGameEvent('FlashUtil_request_stream', { request_id = requestID, data_name = dataName, requests_per_second = rps, target_player = playerID })
+
+	return requestID
+end
+
+--Stop a data stream
+--Params:	streamID - an ID that identifies a unique stream, returned by the RequestDataStream function
+function FlashUtil:StopDataStream( streamID )
+	--remove callback
+	self.callbacks[streamID] = nil
+
+	--tell UIs to stop transmitting data
+	FireGameEvent('FlashUtil_stop_stream', { stream_id = streamID })
 end
 
 FlashUtil:Init()
