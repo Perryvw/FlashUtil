@@ -16,9 +16,9 @@ Once required in your lua script you can request data from the global FlashUtil 
 Data can be requested to one specific player's UI or to all UIs, executing only the callback of the first UI that returns data.
 Currently only three data-retrieval functions are required (feel free to extend!):
 
- - FlashUtil:GetPlayerName( playerID, callback )
- - FlashUtil:GetCursorPos( playerID, callback )
- - FlashUtil:GetCursorWorldPos( playerID, callback )
+ - `FlashUtil:GetPlayerName( playerID, callback )`
+ - `FlashUtil:GetCursorPos( playerID, callback )`
+ - `FlashUtil:GetCursorWorldPos( playerID, callback )`
 
 If a function is called with playerID -1 it will request the data from every client, executing the callback for the first return.
 
@@ -27,10 +27,12 @@ Data streams can be requested for a stream of data from a flash UI. This means t
 Every time a response is received the callback will be called.
 
 Request a stream:
-stream = FlashUtil:RequestDataStream( dataName, RPS, playerID, callback )
+
+`stream = FlashUtil:RequestDataStream( dataName, RPS, playerID, callback )`
 
 Stop a data stream:
-FlashUtil:StopDataStream( stream )
+
+`FlashUtil:StopDataStream( stream )`
 
 The dataName parameter determines what data is requested from the UI. Currently supported data:
  - cursor_position - The cursor position in screen coordinates
