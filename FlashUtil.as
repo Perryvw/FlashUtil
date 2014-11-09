@@ -49,21 +49,23 @@
 		//A stream has been requested from lua, start sending requests every time a timer fires
 		private function onStreamRequest( args:Object ) {
 			//send the first response immediately
-			sendResponse( args );
-			
-			//make a timer and save it under it's ID in an associative array
-			var timer:Timer = new Timer(1000/args.requests_per_second);
-			trace('timer delay:'+1/args.requests_per_second);
-			this.streams[args.request_id] = timer;
-			
-			//bind a function to the firing of a timer
-			timer.addEventListener(TimerEvent.TIMER, function( e:TimerEvent ) {
-				//send a response to lua
-				sendResponse( args ); 	
-			});
-			
-			//start our timer
-			timer.start();
+			if (globals.Players.GetLocalPlayer() == args.target_player || args.target_player == -1){
+				sendResponse( args );
+				
+				//make a timer and save it under it's ID in an associative array
+				var timer:Timer = new Timer(1000/args.requests_per_second);
+				trace('timer delay:'+1/args.requests_per_second);
+				this.streams[args.request_id] = timer;
+				
+				//bind a function to the firing of a timer
+				timer.addEventListener(TimerEvent.TIMER, function( e:TimerEvent ) {
+					//send a response to lua
+					sendResponse( args ); 	
+				});
+				
+				//start our timer
+				timer.start();
+			}
 		}
 		
 		//Lua has requested a data stream to be stopped
